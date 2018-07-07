@@ -36,7 +36,7 @@ RUN pip3 --no-cache-dir install https://storage.googleapis.com/tensorflow/linux/
 # install Keras for Python 3
 ARG KERAS_VERSION=2.2.0
 ENV KERAS_BACKEND=tensorflow
-RUN pip3 --no-cache-dir install --no-dependencies git+https://github.com/fchollet/keras.git@${KERAS_VERSION}
+RUN pip3 --no-cache-dir install git+https://github.com/fchollet/keras.git@${KERAS_VERSION}
 
 
 # install additional debian packages
