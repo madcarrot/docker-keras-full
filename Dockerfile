@@ -3,36 +3,6 @@
 FROM gw000/keras:2.1.4-gpu
 MAINTAINER gw0 [http://gw.tnode.com/] <gw.2018@ena.one>
 
-# install py2-tf-cpu/gpu (Python 2, TensorFlow, CPU/GPU)
-# (already installed in upstream image)
-
-# install py2-th-cpu (Python 2, Theano, CPU/GPU)
-ARG THEANO_VERSION=1.0.1
-ENV THEANO_FLAGS='device=cpu,floatX=float32'
-RUN pip --no-cache-dir install git+https://github.com/Theano/Theano.git@rel-${THEANO_VERSION}
-
-# install py2-cntk-cpu (Python 2, CNTK, CPU/GPU)
-# requirements from old ubuntu repositories for cntk
-RUN echo 'deb http://archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse' > /etc/apt/sources.list.d/ubuntu-16.04.list
-RUN apt-get update -qq \
- && apt-get install --no-install-recommends -y \
-    # other repositories
-    ubuntu-archive-keyring \
- && apt-get update -qq \
- && apt-get install --no-install-recommends -y \
-    # requirements for cntk
-    openmpi-bin=1.10.2-8ubuntu1 \
-    openmpi-common=1.10.2-8ubuntu1 \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
-ARG CNTK_VERSION=2.4
-ARG CNTK_DEVICE=CPU-Only
-RUN pip --no-cache-dir install https://cntk.ai/PythonWheel/${CNTK_DEVICE}/cntk-${CNTK_VERSION}-cp27-cp27mu-linux_x86_64.whl
-
-# install Keras for Python 2
-# (already installed in upstream image)
-
-
 # install py3-tf-cpu/gpu (Python 3, TensorFlow, CPU/GPU)
 RUN apt-get update -qq \
  && apt-get install --no-install-recommends -y \
@@ -63,18 +33,8 @@ ARG TENSORFLOW_DEVICE=gpu
 ARG TENSORFLOW_APPEND=_gpu
 RUN pip3 --no-cache-dir install https://storage.googleapis.com/tensorflow/linux/${TENSORFLOW_DEVICE}/tensorflow${TENSORFLOW_APPEND}-${TENSORFLOW_VERSION}-cp35-cp35m-linux_x86_64.whl
 
-# install py3-th-cpu/gpu (Python 3, Theano, CPU/GPU)
-ARG THEANO_VERSION=1.0.1
-ENV THEANO_FLAGS='device=cpu,floatX=float32'
-RUN pip3 --no-cache-dir install git+https://github.com/Theano/Theano.git@rel-${THEANO_VERSION}
-
-# install py3-cntk-cpu/gpu (Python 3, CNTK, CPU/GPU)
-ARG CNTK_VERSION=2.4
-ARG CNTK_DEVICE=GPU
-RUN pip3 --no-cache-dir install https://cntk.ai/PythonWheel/${CNTK_DEVICE}/cntk-${CNTK_VERSION}-cp35-cp35m-linux_x86_64.whl
-
 # install Keras for Python 3
-ARG KERAS_VERSION=2.1.4
+ARG KERAS_VERSION=2.2.0
 ENV KERAS_BACKEND=tensorflow
 RUN pip3 --no-cache-dir install --no-dependencies git+https://github.com/fchollet/keras.git@${KERAS_VERSION}
 
@@ -99,21 +59,12 @@ RUN apt-get update -qq \
 
 # install additional python packages
 RUN pip --no-cache-dir install \
-    # jupyter notebook and ipython (Python 2)
-    ipython \
-    ipykernel \
-    jupyter \
-    jupyter-kernel-gateway \
-    jupyter-tensorboard \
     # data analysis (Python 2)
     pandas \
     scikit-learn \
     statsmodels \
  && python -m ipykernel.kernelspec \
  && pip3 --no-cache-dir install \
-    # jupyter notebook and ipython (Python 3)
-    ipython \
-    ipykernel \
     # data analysis (Python 3)
     pandas \
     scikit-learn \
@@ -131,13 +82,9 @@ RUN jupyter notebook --version \
  && jupyter nbextension list 2>&1 \
  && python -c "import numpy; print(numpy.__version__)" \
  && python -c "import tensorflow; print(tensorflow.__version__)" \
- && python -c "import theano; print(theano.__version__)" \
- && python -c "import cntk; print(cntk.__version__)" \
  && MPLBACKEND=Agg python -c "import matplotlib.pyplot" \
  && python3 -c "import numpy; print(numpy.__version__)" \
  && python3 -c "import tensorflow; print(tensorflow.__version__)" \
- && python3 -c "import theano; print(theano.__version__)" \
- && python3 -c "import cntk; print(cntk.__version__)" \
  && MPLBACKEND=Agg python3 -c "import matplotlib.pyplot" \
  && rm -rf /tmp/* \
  && dpkg-query -l > /dpkg-query-l.txt \
