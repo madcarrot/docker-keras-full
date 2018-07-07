@@ -26,9 +26,9 @@ RUN apt-get update -qq \
  && rm -rf /var/lib/apt/lists/*
 
 # manually update numpy
-RUN pip3 --no-cache-dir install -U numpy==1.13.3
+RUN pip3 --no-cache-dir install -U numpy==1.14.5
 
-ARG TENSORFLOW_VERSION=1.5.0
+ARG TENSORFLOW_VERSION=1.8.0
 ARG TENSORFLOW_DEVICE=gpu
 ARG TENSORFLOW_APPEND=_gpu
 RUN pip3 --no-cache-dir install https://storage.googleapis.com/tensorflow/linux/${TENSORFLOW_DEVICE}/tensorflow${TENSORFLOW_APPEND}-${TENSORFLOW_VERSION}-cp35-cp35m-linux_x86_64.whl
@@ -49,20 +49,13 @@ RUN apt-get update -qq \
     # build dependencies
     build-essential \
     libffi-dev \
-    # visualization (Python 2 and 3)
-    python-matplotlib \
-    python-pillow \
+    # visualization (Python 3)
     python3-matplotlib \
     python3-pillow \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 # install additional python packages
-RUN pip --no-cache-dir install \
-    # data analysis (Python 2)
-    pandas \
-    scikit-learn \
-    statsmodels \
  && pip3 --no-cache-dir install \
     # data analysis (Python 3)
     pandas \
