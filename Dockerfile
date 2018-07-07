@@ -63,63 +63,8 @@ RUN pip --no-cache-dir install \
     pandas \
     scikit-learn \
     statsmodels \
- && python -m ipykernel.kernelspec \
  && pip3 --no-cache-dir install \
     # data analysis (Python 3)
     pandas \
     scikit-learn \
     statsmodels \
- && python3 -m ipykernel.kernelspec
-
-# configure console
-RUN echo 'alias ll="ls --color=auto -lA"' >> /root/.bashrc \
- && echo '"\e[5~": history-search-backward' >> /root/.inputrc \
- && echo '"\e[6~": history-search-forward' >> /root/.inputrc
-ENV SHELL=/bin/bash
-
-# quick test and dump package lists
-RUN jupyter notebook --version \
- && jupyter nbextension list 2>&1 \
- && python -c "import numpy; print(numpy.__version__)" \
- && python -c "import tensorflow; print(tensorflow.__version__)" \
- && MPLBACKEND=Agg python -c "import matplotlib.pyplot" \
- && python3 -c "import numpy; print(numpy.__version__)" \
- && python3 -c "import tensorflow; print(tensorflow.__version__)" \
- && MPLBACKEND=Agg python3 -c "import matplotlib.pyplot" \
- && rm -rf /tmp/* \
- && dpkg-query -l > /dpkg-query-l.txt \
- && pip2 freeze > /pip2-freeze.txt \
- && pip3 freeze > /pip3-freeze.txt
-
-# run as user 1000
-RUN useradd --create-home --uid 1000 --user-group --groups video --shell /bin/bash user \
- && cp -a /root/.jupyter /root/.local /home/user \
- && chown -R user:user /home/user /srv
-USER user
-
-# publicly accessible on any IP
-ENV IP=*
-# accessible only from localhost
-#ENV IP=127.0.0.1
-
-# only password authentication (password: keras)
-#ENV PASSWD='sha1:98b767162d34:8da1bc3c75a0f29145769edc977375a373407824'
-#unset ENV TOKEN=
-# password and token authentication (password and token: keras)
-ENV PASSWD='sha1:98b767162d34:8da1bc3c75a0f29145769edc977375a373407824'
-ENV TOKEN='keras'
-# random token authentication
-#unset ENV PASSWD=
-#unset ENV TOKEN=
-
-EXPOSE 8888
-WORKDIR /srv/
-CMD /bin/bash -c 'jupyter notebook \
-    --NotebookApp.open_browser=False \
-    --NotebookApp.allow_root=True \
-    --NotebookApp.ip="$IP" \
-    ${PASSWD+--NotebookApp.password=\"$PASSWD\"} \
-    ${TOKEN+--NotebookApp.token=\"$TOKEN\"} \
-    --NotebookApp.allow_password_change=False \
-    --JupyterWebsocketPersonality.list_kernels=True \
-    "$@"'
