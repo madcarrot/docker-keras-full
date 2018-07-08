@@ -1,6 +1,12 @@
-ARG cuda_version=9.0
-ARG cudnn_version=7
-FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
+ARG repository=nvidia/cuda
+FROM ${repository}:9.0-runtime-ubuntu16.04
+
+ENV CUDNN_VERSION 7.1.4.18
+LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+            libcudnn7=$CUDNN_VERSION-1+cuda9.0 && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install system packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
