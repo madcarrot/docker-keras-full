@@ -1,5 +1,3 @@
-# docker-keras-full - Deep learning environment with *Keras* and *Jupyter* using CPU or GPU
-
 FROM gw000/keras:2.1.4-gpu
 MAINTAINER gw0 [http://gw.tnode.com/] <gw.2018@ena.one>
 
@@ -36,7 +34,7 @@ RUN pip3 --no-cache-dir install https://storage.googleapis.com/tensorflow/linux/
 # install Keras for Python 3
 ARG KERAS_VERSION=2.2.0
 ENV KERAS_BACKEND=tensorflow
-RUN pip3 --no-cache-dir install keras
+RUN pip3 --no-cache-dir install git+https://github.com/fchollet/keras.git@${KERAS_VERSION}
 
 
 # install additional debian packages
@@ -60,4 +58,4 @@ RUN apt-get update -qq \
     # data analysis (Python 3)
     pandas \
     scikit-learn \
-    statsmodels \
+statsmodels \
